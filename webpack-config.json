@@ -1,0 +1,28 @@
+{
+  "outputPath": "./public/assets",
+  "publicPath": "/assets",
+  "swDest": "../sw.js",
+
+  "styles": {
+    "frontend": {
+      "src": [
+        "./assets/sass/frontend.sass"
+      ],
+      "dest": "css/app"
+    }
+  },
+
+  "scripts": {
+    "frontend": {
+      "src": [
+        "./assets/js/frontend.js"
+      ],
+      "dest": "js/app"
+    }
+  },
+
+  "copy": {
+    "from": "./assets/images",
+    "to": "images/[path][name].[hash:8].[ext]"
+  }
+}
