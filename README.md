@@ -22,6 +22,8 @@ Just like an even smaller [stimulus](https://github.com/stimulusjs/stimulus).
 </section>
 ```
 
+![example](./.github/example.gif "Example")
+
 ## Options
 Add the options directly to your `form` or `a` elements. The `action` or `href` respectively define the path to send the ajax requests.
 
