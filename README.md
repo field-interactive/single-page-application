@@ -64,7 +64,7 @@ $('body').on('click', 'a[data-ajax="custom-spa"]', function(e) {
     import('./SinglePageAjax').then(({ SinglePageAjax }) => {
         let options = {
             config: {
-                callback: function(data, instance) {
+                callback: (data, instance) => {
                     console.log(data, instance);
                 }
             }

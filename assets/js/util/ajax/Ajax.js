@@ -22,29 +22,30 @@ export class Ajax {
 
     constructor(el = null, ev = null, options = {}) {
         this.el = el;
-        this.e = ev;
+        this.$el = $(this.el);
+        this.ev = ev;
         this.settings = {};
         this.config = {};
 
-        const settings = options.settings || {};
-        const config = options.config || {};
+        const settings = options.settings || {},
+            config = options.config || {};
 
         // Default settings https://api.jquery.com/jquery.ajax/
         this.settings = {
-            type: $(this.el).attr('method') || $(this.el).data('ajax-method') || 'GET',
-            url: $(this.el).attr('action') || $(this.el).attr('href') || window.location.href,
+            type: this.$el.attr('method') || this.$el.data('ajax-method') || 'GET',
+            url: this.$el.attr('action') || this.$el.attr('href') || window.location.href,
             data: []
         };
 
         // Set data to serialized form data
-        if (!settings.data && this.el && $(this.el).prop('tagName').toLowerCase() === 'form') {
-            this.settings.data = $(this.el).serialize();
+        if (!settings.data && this.el && this.$el.prop('tagName').toLowerCase() === 'form') {
+            this.settings.data = this.$el.serialize();
         }
 
         // Extend new settings object if form is a mulitpart form
-        if ($(this.el).attr('enctype') === 'multipart/form-data') {
+        if (this.$el.attr('enctype') === 'multipart/form-data') {
             this.settings = Object.assign(this.settings, {
-                data: new FormData($(this.el)[0]),
+                data: new FormData(this.$el[0]),
                 processData: false,
                 contentType: false,
                 cache: false,
@@ -57,14 +58,14 @@ export class Ajax {
 
         // Behaviour and handling of the request
         this.config = {
-            disable: $(this.el).data('ajax-disable'),
-            updateUrl: $(this.el).data('ajax-update-url') || false,
+            disable: this.$el.data('ajax-disable'),
+            updateUrl: this.$el.data('ajax-update-url') || false,
             callback: null,
-            preventDefault: $(this.el).data('ajax-prevent-default') || true
+            preventDefault: this.$el.data('ajax-prevent-default') || true
         };
 
-        if (this.config.disable !== false && this.el && $(this.el).prop('tagName').toLowerCase() === 'form') { // Disable for form submit button
-            this.config.disable = $(this.el).find('button[type="submit"]');
+        if (this.config.disable !== false && this.el && this.$el.prop('tagName').toLowerCase() === 'form') { // Disable for form submit button
+            this.config.disable = this.$el.find('button[type="submit"]');
         } else if (this.config.disable !== false) { // Disable for element (anchor or button)
             this.config.disable = this.el || false;
         }
@@ -73,8 +74,8 @@ export class Ajax {
         this.config = Object.assign(this.config, config);
 
         if (this.config.preventDefault) {
-            this.e.preventDefault();
-            this.e.stopPropagation();
+            this.ev.preventDefault();
+            this.ev.stopPropagation();
         }
     }
 
@@ -91,11 +92,11 @@ export class Ajax {
 
                 this.handleResult(data);
             }).fail((XMLHttpRequest, textStatus, errorThrown) => {
-            console.log(XMLHttpRequest, textStatus, errorThrown);
-        }).always(() => {
-            removeDisabled(this.config.disable);
-            $('body').removeClass('cursor-loading');
-        });
+                /** TODO: inform the user that something went wrong*/
+                console.log(XMLHttpRequest, textStatus, errorThrown);
+            }).always(() => {
+                removeDisabled(this.config.disable);
+            });
     }
 
     /** Handles the result data from the ajax request */

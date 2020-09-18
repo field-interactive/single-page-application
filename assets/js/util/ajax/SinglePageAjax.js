@@ -24,17 +24,17 @@ export class SinglePageAjax extends Ajax {
         const config = options.config || {};
 
         // Behaviour and handling of the request
-        this.config.mapping = config.mapping || $(this.el).data('ajax-mapping') || null;
-        this.config.mode = config.mode || $(this.el).data('ajax-mode') || 'replace';
+        this.config.mapping = config.mapping || this.$el.data('ajax-mapping') || null;
+        this.config.mode = config.mode || this.$el.data('ajax-mode') || 'replace';
     }
 
     execute() {
         addDisabled(this.config.disable);
 
-        if ($(this.el).data('modal') && !$(this.el).data('modal-confirmed')) {
-            let modal = new Modal(this.el, this.e, {
+        if (this.$el.data('modal') && !this.$el.data('modal-confirmed')) {
+            let modal = new Modal(this.el, this.ev, {
                 callback: () => {
-                    let ajax = new SinglePageAjax(this.el, this.e);
+                    let ajax = new SinglePageAjax(this.el, this.ev);
 
                     ajax.execute();
                 }
@@ -56,10 +56,10 @@ export class SinglePageAjax extends Ajax {
         let scriptsNested = $(data).find('script');
         $(data).find('script').remove();
 
-        let html = $.parseHTML($.trim(data));
-        let scripts = $.merge(scriptsRoot, scriptsNested);
+        let html = $.parseHTML($.trim(data)),
+            scripts = $.merge(scriptsRoot, scriptsNested),
+            mapping = this.config.mapping;
 
-        let mapping = this.config.mapping;
         if (mapping) {
             if (typeof mapping === 'string') {
                 this.handleMapping(mapping, mapping, html);
@@ -86,31 +86,33 @@ export class SinglePageAjax extends Ajax {
 
     /** @internal Use of handling the html result from the ajax request */
     handleMapping(source, target, html) {
+        let $source = $(source);
+
         if (target === 'null') {
-            $(source).fadeOut(500, function () { $(this).remove(); });
+            $source.fadeOut(500, function () { $(this).remove(); });
             return;
         }
 
         let mode = this.config.mode,
             targetHtml = $(html).find(target);
 
-        if ($(source).length > 1) {
-            $(source).each(function(index) {
+        if ($source.length > 1) {
+            $source.each((index, el) => {
                 if (mode === 'prepend') {
-                    $(this).prepend(targetHtml.get(index));
+                    $(el).prepend(targetHtml.get(index));
                 } else if (mode === 'append') {
-                    $(this).append(targetHtml.get(index));
+                    $(el).append(targetHtml.get(index));
                 } else {
-                    $(this).replaceWith(targetHtml.get(index));
+                    $(el).replaceWith(targetHtml.get(index));
                 }
             });
         } else {
             if (mode === 'prepend') {
-                $(source).prepend(targetHtml);
+                $source.prepend(targetHtml);
             } else if (mode === 'append') {
-                $(source).append(targetHtml);
+                $source.append(targetHtml);
             } else {
-                $(source).replaceWith(targetHtml);
+                $source.replaceWith(targetHtml);
             }
         }
     }
